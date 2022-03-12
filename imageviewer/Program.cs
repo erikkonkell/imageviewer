@@ -12,11 +12,11 @@ namespace imageviewer
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
-        static void Main(string[] args)
+        static void Main()
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Form1 a = new Form1();
+            ImageView a = new ImageView();
             Application.Run(a);
             
         }
