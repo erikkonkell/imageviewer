@@ -61,24 +61,26 @@ namespace imageviewer
             File.Delete(tempFile);
         }
 
-        private void pictureBox_Click(object sender, EventArgs e)
-        {
-
-        }
-
         private void browserToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            folderBrowserDialog1.ShowDialog();
-        }
-
-        private void folderBrowserDialog1_HelpRequest(object sender, EventArgs e)
-        {
-            
-        }
-
-        private void richTextBox1_TextChanged(object sender, EventArgs e)
-        {
-
+            DialogResult res = folderBrowserDialog1.ShowDialog();
+            if (res == DialogResult.OK)
+            {
+                File.WriteAllLines(tempFile, Directory.GetFiles(folderBrowserDialog1.SelectedPath));
+                flagImageSources.Clear();
+                using (StreamReader flagImageSourceReader = new StreamReader(tempFile))
+                {
+                    while (!flagImageSourceReader.EndOfStream)
+                    {
+                        string line = flagImageSourceReader.ReadLine();
+                        if (fileTypes.Any(x => line.EndsWith(x)))
+                            flagImageSources.Add(line);
+                    }
+                }
+                index = 0;
+                changeImage();
+                File.Delete(tempFile);
+            }
         }
 
         private void resetTime()
@@ -179,6 +181,7 @@ namespace imageviewer
                 currentImage.Dispose();
             currentImage = Image.FromFile(flagImageSources[getNextInedx()]);
             pictureBox1.Image = currentImage;
+            resetTime();
         }
         public void ResetTimer()
         {
