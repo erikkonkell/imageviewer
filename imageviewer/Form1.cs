@@ -31,34 +31,8 @@ namespace imageviewer
             rd = new Random();
             oneAndAHalf.Checked = true;
             ChangeTimer(1.5f);
-        }
-
-
-        private void openToolStripMenuItem_Click(object sender, EventArgs e)
-        {
             openFileDialog.Title = "Open Image";
             openFileDialog.Filter = "Images|*.gif;*.jpg;*.jpeg;*.png";
-            openFileDialog.ShowDialog();
-            
-        }
-
-        private void openFileDialog_FileOk(object sender, CancelEventArgs e)
-        {
-            filePath = Path.GetDirectoryName(openFileDialog.FileName);
-            File.WriteAllLines(tempFile, Directory.GetFiles(filePath));
-            flagImageSources.Clear();
-            using (StreamReader flagImageSourceReader = new StreamReader(tempFile)) 
-            {
-                while (!flagImageSourceReader.EndOfStream)
-                {
-                    string line = flagImageSourceReader.ReadLine();
-                    if (fileTypes.Any(x => line.EndsWith(x)))
-                        flagImageSources.Add(line);
-                }
-            }
-            index = -1;
-            NextImage();
-            File.Delete(tempFile);
         }
 
         private void browserToolStripMenuItem_Click(object sender, EventArgs e)
@@ -272,7 +246,7 @@ namespace imageviewer
                 this.WindowState = FormWindowState.Normal;
                 menuStrip1.Visible = true;
                 pictureBox1.BackColor = noramlColor;
-
+                exitToolStripMenuItem.Visible = false;
 
             }
             else
@@ -282,6 +256,7 @@ namespace imageviewer
                 this.FormBorderStyle = FormBorderStyle.None;
                 this.WindowState = FormWindowState.Maximized;
                 menuStrip1.Visible = false;
+                exitToolStripMenuItem.Visible = true;
                 pictureBox1.BackColor = fullScreenColor;
 
             }
@@ -315,6 +290,68 @@ namespace imageviewer
         private void aboutMeToolStripMenuItem_Click(object sender, EventArgs e)
         {
             System.Windows.Forms.MessageBox.Show("My message here");
+        }
+
+        private void byDateToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            DialogResult dr = openFileDialog.ShowDialog();
+            if(dr == DialogResult.OK)
+            {
+                filePath = Path.GetDirectoryName(openFileDialog.FileName);
+                DirectoryInfo di = new DirectoryInfo(Path.GetDirectoryName(openFileDialog.FileName));
+                FileInfo[] files = di.GetFiles().OrderBy(p => p.CreationTime).ToArray();
+                Console.WriteLine("");
+                InfoTooList(files);
+                index = FindIndex(openFileDialog.FileName) - 1;
+                NextImage();
+            }
+        }
+
+        private void normalToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            DialogResult dr = openFileDialog.ShowDialog();
+            if (dr == DialogResult.OK)
+            {
+                DirectoryInfo di = new DirectoryInfo(Path.GetDirectoryName(openFileDialog.FileName));
+                filePath = Path.GetDirectoryName(openFileDialog.FileName);
+                flagImageSources.Clear();
+                FileInfo[] files = di.GetFiles();    
+                InfoTooList(files);
+                index = FindIndex(openFileDialog.FileName) - 1;
+                NextImage();
+            }
+        }
+        private void byNameToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            DialogResult dr = openFileDialog.ShowDialog();
+            if (dr == DialogResult.OK)
+            {
+                DirectoryInfo di = new DirectoryInfo(Path.GetDirectoryName(openFileDialog.FileName));
+                filePath = Path.GetDirectoryName(openFileDialog.FileName);
+                flagImageSources.Clear();
+                FileInfo[] files = di.GetFiles().OrderBy(p => p.Name).ToArray();
+                InfoTooList(files);
+                index = FindIndex(openFileDialog.FileName) - 1;
+                NextImage();
+            }
+        }
+
+        private void InfoTooList(FileInfo[] fi)
+        {
+            flagImageSources = new List<string>();
+            foreach (var f in fi)
+            {
+                flagImageSources.Add(filePath + "\\" + f);
+            }
+        }
+        private int FindIndex(string file)
+        {
+            return flagImageSources.FindIndex(a => a == file); ; 
+        }
+
+        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            FullScreen(false);
         }
     }
 }
