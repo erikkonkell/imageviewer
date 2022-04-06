@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
+using WebPWrapper;
 
 
 namespace imageviewer
@@ -17,7 +18,7 @@ namespace imageviewer
     {
         string filePath;
         string tempFile = "./all_images.txt";
-        string[] fileTypes = { ".gif", ".jpg", ".jpeg", ".png",".jpe",   };
+        string[] fileTypes = { ".gif", ".jpg", ".jpeg", ".png",".jpe", ".webp",  };
         private List<string> flagImageSources = new List<string>();
         int index;
         bool fullscreen = false;
@@ -32,7 +33,7 @@ namespace imageviewer
             oneAndAHalf.Checked = true;
             ChangeTimer(1.5f);
             openFileDialog.Title = "Open Image";
-            openFileDialog.Filter = "Images|*.gif;*.jpg;*.jpeg;*.png";
+            openFileDialog.Filter = "Images|*.gif;*.jpg;*.jpeg;*.png;*.webp";
         }
 
         private void browserToolStripMenuItem_Click(object sender, EventArgs e)
@@ -42,15 +43,14 @@ namespace imageviewer
             {
                 File.WriteAllLines(tempFile, Directory.GetFiles(folderBrowserDialog1.SelectedPath));
                 flagImageSources.Clear();
-                using (StreamReader flagImageSourceReader = new StreamReader(tempFile))
+                StreamReader flagImageSourceReader = new StreamReader(tempFile);
+                while (!flagImageSourceReader.EndOfStream)
                 {
-                    while (!flagImageSourceReader.EndOfStream)
-                    {
-                        string line = flagImageSourceReader.ReadLine();
-                        if (fileTypes.Any(x => line.EndsWith(x)))
-                            flagImageSources.Add(line);
-                    }
+                    string line = flagImageSourceReader.ReadLine();
+                    if (fileTypes.Any(x => line.EndsWith(x)))
+                        flagImageSources.Add(line);
                 }
+                
                 index = 0;
                 NextImage();
                 File.Delete(tempFile);
@@ -182,8 +182,16 @@ namespace imageviewer
         }
         private void SetImage(string path)
         {
+            if(Path.GetExtension(path) == ".webp")
+            {
+                WebP webp = new WebP();                
+                pictureBox1.Image = webp.Load(path);
+                
+            }
             //pictureBox1.Image = Image.FromFile(path);
-            pictureBox1.Image = new Bitmap(path);
+            else
+                pictureBox1.Image = new Bitmap(path);
+            Console.WriteLine(path);
         }
         private void Clean()
         {
@@ -289,7 +297,7 @@ namespace imageviewer
 
         private void aboutMeToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            System.Windows.Forms.MessageBox.Show("My message here");
+            System.Windows.Forms.MessageBox.Show("Created by Erik Konkell\n2020-03");
         }
 
         private void byDateToolStripMenuItem_Click(object sender, EventArgs e)

@@ -181,7 +181,7 @@ namespace imageviewer
             this.exitToolStripMenuItem});
             this.RightClickMenu.Name = "RightClickMenu";
             this.RightClickMenu.RenderMode = System.Windows.Forms.ToolStripRenderMode.Professional;
-            this.RightClickMenu.Size = new System.Drawing.Size(181, 114);
+            this.RightClickMenu.Size = new System.Drawing.Size(132, 92);
             // 
             // playToolStripMenuItem
             // 
@@ -195,7 +195,7 @@ namespace imageviewer
             // 
             this.randomToolStripMenuItem.CheckOnClick = true;
             this.randomToolStripMenuItem.Name = "randomToolStripMenuItem";
-            this.randomToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.randomToolStripMenuItem.Size = new System.Drawing.Size(131, 22);
             this.randomToolStripMenuItem.Text = "Random";
             // 
             // speedsecTool
